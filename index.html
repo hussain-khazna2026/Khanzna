@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="خزنتي">
+<meta name="theme-color" content="#1F4A3D">
+<link rel="apple-touch-icon" id="touchIcon" href="">
+<title>خزنتي</title>
+<style>
+:root{
+  --bg:#E9EDEA;--surface:#F7F9F7;--ink:#16251F;--muted:#5C6B64;--forest:#1F4A3D;--on-forest:#F2F7F4;
+  --brass:#B9801F;--line:#CBD3CE;--danger:#A63D2F;
+  --c-image:#2F6B5A;--c-video:#9A6A1B;--c-audio:#566092;--c-file:#6F6258;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0F1814;--surface:#17231E;--ink:#E6EEE9;--muted:#93A39B;--forest:#7FC1A8;--on-forest:#0E1A15;
+  --brass:#E0A640;--line:#2A3A33;--danger:#E27A6A;
+  --c-image:#7FC1A8;--c-video:#E0A640;--c-audio:#A3AEE8;--c-file:#C4B2A4;}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"SF Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;font-size:16px;line-height:1.5;overscroll-behavior:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+[hidden]{display:none!important}
+svg{display:block;flex:none}
+
+/* ---------- lock ---------- */
+#lock{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:18px;text-align:center}
+.dial{width:132px;height:132px;filter:drop-shadow(0 10px 22px rgba(31,74,61,.35))}
+.dial svg{width:100%;height:100%}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{border-radius:10px}
+.store{position:relative;overflow:hidden}
+.store>*{position:relative;z-index:1}
+.store::after{content:"";position:absolute;inset-inline-start:-46px;bottom:-70px;width:190px;height:190px;border-radius:50%;border:16px solid rgba(255,255,255,.07)}
+.store::before{content:"";position:absolute;inset-inline-start:-6px;bottom:-30px;width:110px;height:110px;border-radius:50%;border:5px dashed rgba(255,255,255,.07)}
+#lock h1{margin:0;font-size:30px}
+#lock p{margin:0;color:var(--muted);max-width:320px}
+#lockForm{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+input[type=password],input[type=search],input[type=text]{width:100%;padding:13px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-size:17px}
+.btn{border-radius:14px;padding:13px 16px;background:var(--forest);color:var(--on-forest);font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+#lockErr{color:var(--danger);min-height:1.5em;font-size:15px}
+
+/* ---------- shell ---------- */
+#app{max-width:640px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(150px + env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
+h1.t{margin:0;font-size:26px;font-weight:800}
+h2.s{margin:26px 0 10px;font-size:18px;font-weight:800}
+.iconbtn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--ink);background:var(--surface);border:1px solid var(--line)}
+.iconbtn[aria-pressed=true]{background:var(--forest);color:var(--on-forest);border-color:var(--forest)}
+.sub{color:var(--muted);font-size:14px}
+
+/* storage card */
+.store{display:flex;align-items:center;gap:16px;background:var(--forest);color:var(--on-forest);border-radius:24px;padding:18px;margin-top:12px}
+.store .ring{position:relative;width:84px;height:84px}
+.store .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
+.store .ring svg circle:first-child{stroke:rgba(255,255,255,.22)}
+.store .ring svg circle:last-child{stroke:#F4C25E}
+@media (prefers-color-scheme:dark){.store .ring svg circle:first-child{stroke:rgba(0,0,0,.2)}.store .ring svg circle:last-child{stroke:#0E1A15}}
+.store .tx{display:flex;flex-direction:column;gap:2px}
+.store .tx strong{font-size:19px}
+.store .tx span{font-size:14px;opacity:.85}
+/* categories */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{--c:var(--forest);text-align:start;display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+@supports (background:color-mix(in srgb,red 10%,white)){.cat{background:color-mix(in srgb,var(--c) 12%,var(--surface))}}
+.cat .ci{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:var(--surface)}
+.cat strong{font-size:17px}
+.cat span{font-size:13px;color:var(--muted)}
+
+/* rows */
+.rows{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.rowi{display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:start;width:100%;border-top:1px solid var(--line)}
+.rowi:first-child{border-top:0}
+.rowi .ri{color:var(--forest)}
+.rowi .rt{flex:1;min-width:0}
+.rowi .rt b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:auto}
+.rowi .rt small{color:var(--muted);font-size:13px}
+.rowi.danger{color:var(--danger)}
+.rowi .th{width:52px;height:52px;border-radius:10px}
+.chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:var(--on-forest);flex:none}
+.chk.on{background:var(--forest);border-color:var(--forest)}
+
+/* recent */
+.hscroll{display:flex;gap:10px;overflow-x:auto;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll .tile{flex:0 0 108px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.tile{position:relative;display:flex;flex-direction:column;gap:5px;text-align:start}
+.th{aspect-ratio:1;border-radius:16px;background:var(--surface) center/cover no-repeat;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.tile .nm{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:auto}
+.tile .sz{font-size:12px;color:var(--muted)}
+.tile .star{position:absolute;top:7px;inset-inline-start:7px;color:#F4C25E;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.tile .chk{position:absolute;top:7px;inset-inline-end:7px;background:rgba(0,0,0,.35);border-color:#fff}
+.tile .chk.on{background:var(--forest);border-color:var(--forest)}
+.tile.sel .th{outline:3px solid var(--forest)}
+
+.empty{text-align:center;color:var(--muted);padding:56px 16px}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:4px}
+
+.tools{display:flex;gap:8px;margin:10px 0 14px}
+.tools input{flex:1;min-width:0}
+
+/* seg */
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.pill{border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;font-size:15px;background:transparent}
+.pill[aria-pressed=true]{background:var(--forest);border-color:var(--forest);color:var(--on-forest)}
+
+/* nav + fab */
+#nav{position:fixed;inset-inline:0;bottom:0;z-index:8;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+#nav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);min-width:64px;padding:4px 8px}
+#nav button[aria-current=true]{color:var(--forest);font-weight:700}
+#selbar{position:fixed;inset-inline:0;bottom:0;z-index:9;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+#selbar button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;min-width:64px;padding:4px}
+#selbar button.d{color:var(--danger)}
+#selbar button:disabled{opacity:.4}
+#fab{position:fixed;inset-inline-end:18px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:7;width:58px;height:58px;border-radius:20px;background:var(--brass);color:#1B1305;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+#toast{position:fixed;bottom:calc(150px + env(safe-area-inset-bottom));inset-inline:16px;margin:auto;max-width:420px;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 14px;text-align:center;z-index:30;font-size:15px}
+
+/* dialogs */
+dialog{border:0;padding:0;background:var(--surface);color:var(--ink);overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+#viewer{border-radius:20px;width:min(96vw,640px);max-height:94dvh}
+#sheet{margin:auto auto 0;width:100%;max-width:560px;border-radius:24px 24px 0 0;max-height:85dvh;padding-bottom:env(safe-area-inset-bottom)}
+.sb{padding:16px;display:flex;flex-direction:column;gap:12px}
+.sb h3{margin:6px 0 0;font-size:16px}
+.opt{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 4px;border-top:1px solid var(--line);text-align:start}
+.opt:first-of-type{border-top:0}
+.opt.on{color:var(--forest);font-weight:700}
+.vtitle{font-weight:800;word-break:break-all;direction:auto}
+.media{border-radius:14px;background:#000;display:grid;place-items:center;min-height:120px;overflow:hidden}
+.media img,.media video{max-width:100%;max-height:54dvh;display:block}
+.media audio{width:100%}
+.noprev{color:#aaa;padding:30px;text-align:center}
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.acts button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:1px solid var(--line);font-size:12px}
+.acts button.d{color:var(--danger)}
+</style>
+</head>
+<body>
+
+<section id="lock">
+  <div class="dial" id="dial"></div>
+  <h1>خزنتي</h1>
+  <p id="lockMsg">أدخل كلمة السر لفتح الخزنة.</p>
+  <form id="lockForm" autocomplete="off">
+    <input type="password" id="pw" placeholder="كلمة السر" autocomplete="current-password" required>
+    <input type="password" id="pw2" placeholder="أعد كتابة كلمة السر" hidden>
+    <button class="btn" id="lockBtn">فتح</button>
+    <div id="lockErr" role="alert"></div>
+  </form>
+</section>
+
+<main id="app" hidden><div id="screen"></div></main>
+<button id="fab" aria-label="إضافة ملفات" hidden></button>
+<nav id="nav" hidden></nav>
+<div id="selbar" hidden></div>
+<input type="file" id="picker" multiple hidden>
+
+<dialog id="viewer"><div class="sb" id="vbody"></div></dialog>
+<dialog id="sheet"><div class="sb" id="sbody"></div></dialog>
+<div id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- icons ---------- */
+const ICON={
+ home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ files:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ more:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+ image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>',
+ video:'<rect x="3" y="5" width="13" height="14" rx="2"/><path d="M16 10l5-3v10l-5-3z"/>',
+ audio:'<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+ file:'<path d="M6 2h8l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v5h5"/>',
+ folder:'<path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+ trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ check:'<path d="M5 12l5 5 9-10"/>',
+ sliders:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+ list:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ back:'<path d="M9 5l7 7-7 7"/>',
+ download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+ close:'<path d="M6 6l12 12M18 6L6 18"/>',
+ restore:'<path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/>',
+ select:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+ cloud:'<path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.75 4.75 0 0 1 0 9.5z"/>'
+};
+const ic=(n,s=22,f=false)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${f?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+
+/* ---------- state ---------- */
+let db,key=null,items=[],folders=[],est={usage:0,quota:0};
+let screen='home';
+let lib={cat:'all',fav:false,trash:false,folder:null,title:'الملفات'};
+let sortBy='new',viewMode='grid',q='',selecting=false,sel=new Set();
+let settings={autolock:60};
+let idleTimer=null,firstRun=false;
+const KN={image:'صور',video:'فيديو',audio:'صوت',file:'ملفات'};
+
+/* ---------- db ---------- */
+const openDB=()=>new Promise((res,rej)=>{
+  const r=indexedDB.open('khazna',1);
+  r.onupgradeneeded=()=>['meta','files','chunks'].forEach(n=>r.result.createObjectStore(n));
+  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);
+});
+const tx=(store,mode,fn)=>new Promise((res,rej)=>{
+  const t=db.transaction(store,mode);let rq;
+  try{rq=fn(t.objectStore(store))}catch(e){return rej(e)}
+  t.oncomplete=()=>res(rq&&rq.result);
+  t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('abort'));
+});
+
+/* ---------- crypto ---------- */
+const enc=async buf=>{
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,buf));
+  const out=new Uint8Array(12+ct.length);out.set(iv);out.set(ct,12);return out;
+};
+const dec=u8=>crypto.subtle.decrypt({name:'AES-GCM',iv:u8.slice(0,12)},key,u8.slice(12));
+const encJ=o=>enc(new TextEncoder().encode(JSON.stringify(o)));
+const decJ=async u=>JSON.parse(new TextDecoder().decode(await dec(u)));
+async function deriveKey(pass,salt){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+
+/* ---------- logo ---------- */
+const logoSVG=(size,round=true)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 120 120" role="img" aria-label="خزنتي"><rect width="120" height="120" ${round?'rx="28"':''} fill="#1F4A3D"/><rect x="31" y="28" width="16" height="64" rx="8" fill="#F2F7F4"/><rect x="73" y="28" width="16" height="64" rx="8" fill="#F2F7F4"/><rect x="38" y="52" width="44" height="16" rx="8" fill="#E0A640"/></svg>`;
+function makeIcon(){
+  $('#dial').innerHTML=logoSVG(132);
+  const fav=document.createElement('link');fav.rel='icon';fav.href='data:image/svg+xml,'+encodeURIComponent(logoSVG(64));document.head.appendChild(fav);
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=180;c.getContext('2d').drawImage(img,0,0,180,180);
+    try{$('#touchIcon').href=c.toDataURL('image/png')}catch{}};
+  img.src='data:image/svg+xml,'+encodeURIComponent(logoSVG(180,false));
+}
+
+/* ---------- init / lock ---------- */
+async function init(){
+  makeIcon();
+  db=await openDB();
+  const salt=await tx('meta','readonly',s=>s.get('salt'));
+  firstRun=!salt;
+  const a=await tx('meta','readonly',s=>s.get('autolock'));
+  if(typeof a==='number')settings.autolock=a;
+  if(firstRun){
+    $('#lockMsg').textContent='أنشئ كلمة سر لخزنتك. ما فيه طريقة لاسترجاعها إذا نسيتها، احفظها زين.';
+    $('#pw2').hidden=false;$('#pw2').required=true;$('#lockBtn').textContent='إنشاء الخزنة';
+    $('#pw').autocomplete='new-password';
+  }
+}
+$('#lockForm').addEventListener('submit',async e=>{
+  e.preventDefault();const err=$('#lockErr');err.textContent='';const pass=$('#pw').value;
+  try{
+    if(firstRun){
+      if(pass.length<6){err.textContent='كلمة السر لازم تكون 6 أحرف على الأقل.';return}
+      if(pass!==$('#pw2').value){err.textContent='كلمتا السر غير متطابقتين.';return}
+      const salt=crypto.getRandomValues(new Uint8Array(16));
+      key=await deriveKey(pass,salt);
+      const check=await enc(new TextEncoder().encode('ok'));
+      await tx('meta','readwrite',s=>{s.put(salt,'salt');s.put(check,'check')});
+      firstRun=false;
+    }else{
+      const salt=await tx('meta','readonly',s=>s.get('salt'));
+      key=await deriveKey(pass,salt);
+      const check=await tx('meta','readonly',s=>s.get('check'));
+      try{await dec(check)}catch{key=null;throw new Error('bad')}
+    }
+    await loadAll();
+    $('#pw').value='';$('#pw2').value='';
+    $('#lock').hidden=true;$('#app').hidden=false;$('#nav').hidden=false;
+    navigator.storage&&navigator.storage.persist&&navigator.storage.persist();
+    screen='home';await updateUsage();render();
+  }catch(ex){
+    const d=$('#dial');d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');
+    err.textContent='كلمة السر غير صحيحة.';
+  }
+});
+function lock(){
+  key=null;items=[];folders=[];selecting=false;sel.clear();q='';closeViewer();closeSheet();
+  $('#app').hidden=true;$('#nav').hidden=true;$('#fab').hidden=true;$('#selbar').hidden=true;
+  $('#lock').hidden=false;$('#lockErr').textContent='';
+}
+document.addEventListener('visibilitychange',()=>{
+  if(!key)return;
+  if(document.hidden){
+    if(settings.autolock===0)lock();else idleTimer=setTimeout(lock,settings.autolock*1000);
+  }else clearTimeout(idleTimer);
+});
+async function loadAll(){
+  const recs=await tx('files','readonly',s=>s.getAll());
+  items=[];for(const r of recs){try{items.push({id:r.id,...await decJ(r.m)})}catch{}}
+  const f=await tx('meta','readonly',s=>s.get('folders'));
+  folders=f?await decJ(f):[];
+}
+async function saveItem(it){const {id,...meta}=it;const m=await encJ(meta);await tx('files','readwrite',s=>s.put({id,m},id))}
+async function saveFolders(){const v=await encJ(folders);await tx('meta','readwrite',s=>s.put(v,'folders'))}
+/* ---------- add files ---------- */
+const CH=4*1024*1024;
+$('#fab').onclick=()=>$('#picker').click();
+$('#picker').addEventListener('change',async e=>{
+  const files=[...e.target.files];e.target.value='';
+  const target=screen==='lib'?lib.folder:null;let n=0;
+  for(const f of files){
+    n++;const id=crypto.randomUUID();
+    try{
+      const parts=Math.max(1,Math.ceil(f.size/CH));
+      for(let i=0;i<parts;i++){
+        toast(`تشفير ${num(n)}/${num(files.length)}: ${f.name} (${num(Math.round(i/parts*100))}%)`);
+        const c=await enc(await f.slice(i*CH,(i+1)*CH).arrayBuffer());
+        await tx('chunks','readwrite',s=>s.put(c,id+':'+i));
+      }
+      const it={id,name:f.name,type:f.type||'',size:f.size,n:parts,folder:target,date:Date.now(),fav:false,trash:false,thumb:await makeThumb(f)};
+      await saveItem(it);items.push(it);render();
+    }catch(ex){
+      await removeChunks(id);
+      toast('تعذر حفظ «'+f.name+'». غالباً المساحة امتلت.');
+      await new Promise(r=>setTimeout(r,2200));
+    }
+  }
+  toast('تم الحفظ والتشفير.');await updateUsage();render();
+});
+function makeThumb(f){
+  return new Promise(res=>{
+    const k=(f.type||'').split('/')[0];
+    if(k!=='image'&&k!=='video')return res(null);
+    const url=URL.createObjectURL(f);let done=false;
+    const fin=v=>{if(done)return;done=true;URL.revokeObjectURL(url);res(v)};
+    setTimeout(()=>fin(null),5000);
+    const draw=(el,w,h)=>{try{const s=240/Math.max(w,h);const c=document.createElement('canvas');
+      c.width=Math.round(w*s);c.height=Math.round(h*s);c.getContext('2d').drawImage(el,0,0,c.width,c.height);
+      fin(c.toDataURL('image/jpeg',.65))}catch{fin(null)}};
+    if(k==='image'){const im=new Image();im.onload=()=>draw(im,im.naturalWidth,im.naturalHeight);im.onerror=()=>fin(null);im.src=url}
+    else{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='metadata';
+      v.onloadeddata=()=>{v.currentTime=Math.min(1,(v.duration||2)/2)};
+      v.onseeked=()=>draw(v,v.videoWidth,v.videoHeight);v.onerror=()=>fin(null);v.src=url}
+  });
+}
+const removeChunks=id=>tx('chunks','readwrite',s=>s.delete(IDBKeyRange.bound(id+':',id+':\uffff'))).catch(()=>{});
+async function getBlob(it){
+  const parts=[];
+  for(let i=0;i<it.n;i++){parts.push(await dec(await tx('chunks','readonly',s=>s.get(it.id+':'+i))))}
+  return new Blob(parts,{type:it.type||'application/octet-stream'});
+}
+
+/* ---------- viewer ---------- */
+let curUrl=null;
+function closeViewer(){
+  const v=$('#viewer');if(v.open)v.close();
+  if(curUrl){URL.revokeObjectURL(curUrl);curUrl=null}$('#vbody').innerHTML='';
+}
+$('#viewer').addEventListener('close',()=>{if(curUrl){URL.revokeObjectURL(curUrl);curUrl=null}$('#vbody').innerHTML=''});
+$('#viewer').addEventListener('click',e=>{if(e.target===$('#viewer'))closeViewer()});
+async function openItem(it){
+  $('#vbody').innerHTML=`<div class="vtitle">${esc(it.name)}</div><div class="media"><div class="noprev">جاري فك التشفير...</div></div>`;
+  if(!$('#viewer').open)$('#viewer').showModal();
+  let blob;
+  try{blob=await getBlob(it)}catch{$('.media').innerHTML='<div class="noprev">تعذر فتح الملف.</div>';return}
+  curUrl=URL.createObjectURL(blob);const k=kind(it);
+  const media=k==='image'?`<img src="${curUrl}" alt="">`
+    :k==='video'?`<video src="${curUrl}" controls playsinline autoplay></video>`
+    :k==='audio'?`<audio src="${curUrl}" controls autoplay></audio>`
+    :`<div class="noprev">لا توجد معاينة لهذا النوع. استخدم زر التنزيل.</div>`;
+  $('#vbody').innerHTML=`<div class="vtitle">${esc(it.name)}</div><div class="media">${media}</div>
+    <div class="sub">${KN[k]} · ${fmt(it.size)} · ${when(it.date)}${it.folder?' · '+esc(it.folder):''}</div>
+    <div class="acts">
+      ${it.trash?`<button id="vRestore">${ic('restore')}<span>استعادة</span></button><button class="d" id="vPurge">${ic('trash')}<span>حذف نهائي</span></button>`
+      :`<button id="vFav">${ic('star',22,it.fav)}<span>${it.fav?'إزالة':'مفضلة'}</span></button>
+        <button id="vSave">${ic('download')}<span>تنزيل</span></button>
+        <button id="vMove">${ic('folder')}<span>نقل</span></button>
+        <button class="d" id="vTrash">${ic('trash')}<span>حذف</span></button>`}
+      <button id="vClose">${ic('close')}<span>إغلاق</span></button>
+    </div>`;
+  $('#vClose').onclick=closeViewer;
+  if(it.trash){
+    $('#vRestore').onclick=async()=>{it.trash=false;await saveItem(it);closeViewer();render()};
+    $('#vPurge').onclick=async()=>{await tx('files','readwrite',s=>s.delete(it.id));await removeChunks(it.id);
+      items=items.filter(x=>x!==it);closeViewer();await updateUsage();render();toast('انحذف نهائياً.')};
+  }else{
+    $('#vFav').onclick=async()=>{it.fav=!it.fav;await saveItem(it);closeViewer();render()};
+    $('#vSave').onclick=()=>{const a=document.createElement('a');a.href=curUrl;a.download=it.name;document.body.appendChild(a);a.click();a.remove()};
+    $('#vMove').onclick=()=>{closeViewer();sel=new Set([it.id]);selecting=true;viewerMove=true;moveSheet()};
+    $('#vTrash').onclick=async()=>{it.trash=true;await saveItem(it);closeViewer();render();toast('انتقل للمحذوفات.')};
+  }
+}
+let viewerMove=false;
+$('#sheet').addEventListener('close',()=>{if(viewerMove){viewerMove=false;selecting=false;sel.clear();render()}});
+
+init().catch(()=>{$('#lockErr').textContent='المتصفح ما يدعم التخزين المطلوب. افتح الصفحة في Safari مباشرة.'});
+</script>
+</body>
+</html>
